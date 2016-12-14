@@ -1,0 +1,26 @@
+function  vidInfo = interpolate(vidInfo, path, opt)
+%interpolating the video frames
+%   Detailed explanation goes here
+
+for i=1:vidInfo.vidNum
+    startIdx = vidInfo.vid(i).startFrame;
+    endIdx = vidInfo.vid(i).endFrame;
+    vid(i).movingFrames = vidInfo.vid(i).posMat(:, startIdx:endIdx);
+    %top = prctile(vid(i).movingFrames(:), 95);
+    top = max(max(vid(i).movingFrames));
+    vid(i).movingFrames(vid(i).movingFrames == 1) = top;
+    vid(i).movingFrames = abs(vid(i).movingFrames - top);
+    
+    vid(i).interpFrames = imresize(vid(i).movingFrames, [1088 100], opt.interpMethod);
+    %vid(i).colZeroMean = vid(i).interpFrames - repelem(mean(vid(i).interpFrames), 1088, 1);
+    %vid(i).colZeroMean = vid(i).interpFrames - mean((mean(vid(i).interpFrames)));
+    %Yq = (1:1088)';
+    %Xq = linspace(1, endIdx-startIdx+1, 100);
+    %vid(i).interpFrames = interp2(vid(i).movingFrames, Xq, Yq, opt.interpMethod);
+end
+
+vidInfo.vid = vid;
+saveInfo(vidInfo,path,opt,'interpolatedFrames');
+
+end
+
